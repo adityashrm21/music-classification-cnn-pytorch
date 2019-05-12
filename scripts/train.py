@@ -27,7 +27,7 @@ args = parser.parse_args()
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-def train(X_train, y_train, batch_size):
+def train(X_train, y_train, batch_size, epochs):
 
     X_train = torch.tensor(X_train, device = device)
     y_train = torch.tensor(y_train, device = device)
@@ -40,7 +40,7 @@ def train(X_train, y_train, batch_size):
     optimizer = optim.SGD(net.parameters(), lr=args.lr,
                             momentum=args.momentum, weight_decay=args.weight_decay)
 
-    for epoch in range(100):  # loop over the dataset multiple times
+    for epoch in range(epochs):  # loop over the dataset multiple times
 
         running_loss = 0.0
         iters = X_train.shape[0]//batch_size + 1
@@ -109,7 +109,7 @@ def main():
     X_train, X_test, y_train, y_test = get_train_test(X, y)
 
     print("Training the model..")
-    model = train(X_train, y_train, args.batch_size)
+    model = train(X_train, y_train, args.batch_size, args.epochs)
     print("Training completed!")
     print("Doing the inference on the test set..")
     test_acc = test(X_test, y_test, model)
