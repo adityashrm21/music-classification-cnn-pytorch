@@ -47,6 +47,10 @@ optional arguments:
                         weight decay for L2 penalty
 ```
 
+### Results
+
+Current test accuracy with **100 epochs: 75%**.
+
 **Todo**:
 
 - Try pretrained model architectures

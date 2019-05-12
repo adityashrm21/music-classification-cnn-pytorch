@@ -107,7 +107,7 @@ def main():
     print("Completed reading the data!")
 
     X_train, X_test, y_train, y_test = get_train_test(X, y)
-
+ 
     print("Training the model..")
     model = train(X_train, y_train, args.batch_size, args.epochs)
     print("Training completed!")
