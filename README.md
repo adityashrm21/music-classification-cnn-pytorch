@@ -16,6 +16,8 @@ It is preferable but not necessary to use a GPU.
 
 ### Preparing the dataset
 
+Go to the root directory of the cloned repository and run the following commands:
+
 ```bash
 wget http://opihi.cs.uvic.ca/sound/genres.tar.gz
 tar -xvzf genres.tar.gz
