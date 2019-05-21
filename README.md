@@ -51,8 +51,6 @@ optional arguments:
 
 ### Results
 
-Current test accuracy with **100 epochs: 75%**.
-
-**Todo**:
-
-- Try pretrained model architectures
+Current test accuracy:
+- without a pretrained model and 100 epochs: 75%
+- with a pretrained model and 75 epochs: 60%
