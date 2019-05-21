@@ -33,3 +33,15 @@ def splitsongs(X, y, window = 0.1, overlap = 0.5):
         temp_y.append(y)
 
     return np.array(temp_X), np.array(temp_y)
+
+def normalize(img, mean, std):
+    img = img/255.0
+    img[0] = (img[0] - mean[0]) / std[0]
+    img[1] = (img[1] - mean[1]) / std[1]
+    img[2] = (img[2] - mean[2]) / std[2]
+    img = np.clip(img, 0.0, 1.0)
+
+    return img
+
+# img = normalize(img, mean=[0.485, 0.456, 0.406],
+#                         std=[0.229, 0.224, 0.225])

@@ -3,6 +3,7 @@ from models.custom_cnn import Net
 from utils import splitsongs, to_melspectrogram
 import torch.optim as optim
 import torch
+import torchvision.models as models
 import os
 import argparse
 import numpy as np
@@ -29,16 +30,24 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 def train(X_train, y_train, batch_size, epochs):
 
-    X_train = torch.tensor(X_train, device = device)
-    y_train = torch.tensor(y_train, device = device)
-    net = Net()
+    # X_train = torch.tensor(X_train, device = device)
+    # y_train = torch.tensor(y_train, device = device)
+    # net = Net()
+    net = models.resnet50(pretrained=True)
+    # turn off gradients
+    for param in net.parameters():
+        param.requires_grad = False
+
+    new_fc = nn.Sequential(*list(net.fc.children())[:-1] + [nn.Linear(2048, 10)])
+    net.fc = new_fc
+
     net = net.to(device)
-    net = net.type(torch.cuda.DoubleTensor)
+    # net = net.type(torch.cuda.DoubleTensor)
     net.train();
 
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.SGD(net.parameters(), lr=args.lr,
-                            momentum=args.momentum, weight_decay=args.weight_decay)
+    optimizer = optim.Adam(net.parameters(), lr=args.lr,
+                        weight_decay=args.weight_decay)
 
     for epoch in range(epochs):  # loop over the dataset multiple times
 
@@ -49,6 +58,8 @@ def train(X_train, y_train, batch_size, epochs):
             # get the inputs
             inputs = X_train[(i-1)*batch_size:i*batch_size, :, :]
             labels = y_train[(i-1)*batch_size:i*batch_size]
+            inputs = torch.tensor(inputs, device = device)
+            labels = torch.tensor(labels, device = device)
 
             # zero the parameter gradients
             optimizer.zero_grad()
@@ -100,14 +111,17 @@ def main():
     if os.path.isfile(os.path.join(args.root_dir, "x_gtzan_npy.npy")) and os.path.isfile(os.path.join(args.root_dir, "y_gtzan_npy.npy")):
         X = np.load("x_gtzan_npy.npy")
         y = np.load("y_gtzan_npy.npy")
+        print("Using saved training data..")
     else:
         X, y = read_data(gtzan_dir, genres, song_samples, to_melspectrogram, debug=False)
         np.save('x_gtzan_npy.npy', X)
         np.save('y_gtzan_npy.npy', y)
+        print("Saved data not found, reading again..")
     print("Completed reading the data!")
 
+    print("Splitting into train test and converting to desired shape..")
     X_train, X_test, y_train, y_test = get_train_test(X, y)
- 
+
     print("Training the model..")
     model = train(X_train, y_train, args.batch_size, args.epochs)
     print("Training completed!")
